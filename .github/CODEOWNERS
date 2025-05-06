@@ -1,0 +1,3 @@
+# Protect workflows for security
+.github/workflows @xobust
+.github/CODEOWNERS @xobust
