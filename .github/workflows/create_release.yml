@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-release:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -34,6 +34,13 @@ jobs:
       - name: Build the CLI
         run: dotnet publish ./CS2CalloutExtractor.Cli/CS2CalloutExtractor.Cli.csproj --configuration Release --runtime ${{ matrix.os }} --self-contained true --output ./artifacts/${{ matrix.os }}
 
+      - name: Verify artifact exists
+        run: |
+          if [ ! -d "./artifacts/${{ matrix.os }}" ]; then
+            echo "Error: Artifact directory does not exist."
+            exit 1
+          fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -46,9 +53,6 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
-        with:
-          name: cli-${{ matrix.os }}
-          path: ./artifacts
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
