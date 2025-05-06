@@ -24,10 +24,12 @@ jobs:
       - name: Build the project
         run: dotnet build --configuration Release
 
-      - name: Pack the NuGet package
-        run: dotnet pack --configuration Release --output ./artifacts
+      - name: Pack the NuGet package with symbols
+        run: dotnet pack --configuration Release --output ./artifacts --include-symbols --include-source
 
-      - name: Publish to NuGet
+      - name: Publish NuGet package and symbols
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: dotnet nuget push ./artifacts/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+          dotnet nuget push ./artifacts/*.snupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json

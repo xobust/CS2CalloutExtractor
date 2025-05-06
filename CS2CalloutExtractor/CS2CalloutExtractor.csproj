@@ -6,11 +6,32 @@
     <RootNamespace>CS2CalloutExtractor</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>CS2CalloutExtractor</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Alexander Westberg-Bladh</Authors>
+    <Company>Alexander Westberg-Bladh</Company>
+    <Description>A library for extracting callouts from Counter-Strike 2 `.vpk` files.</Description>
+    <PackageTags>Counter-Strike;VPK;Callouts;ValveResourceFormat</PackageTags>
+    <RepositoryUrl>https://github.com/xobust/CS2CalloutExtractor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/xobust/CS2CalloutExtractor</PackageProjectUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSource>true</IncludeSource>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ValvePak" Version="2.0.1.107" />
     <PackageReference Include="ValveResourceFormat" Version="12.0.4261" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 </Project>
