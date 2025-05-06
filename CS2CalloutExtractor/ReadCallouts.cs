@@ -1,4 +1,3 @@
-
 using System.Numerics;
 using SteamDatabase.ValvePak;
 using ValveResourceFormat;
@@ -9,39 +8,43 @@ using ValveResourceFormat.Utils;
 
 namespace CS2CalloutExtractor;
 
-public class ReadCallouts(Package package, Dictionary<string, string> localizedNames)
+/// <summary>
+/// Reads callouts from a CS2 package
+/// </summary>
+/// <param name="package"></param>
+/// <param name="localizedNames"></param>
+public class ReadCallouts(Package package, Dictionary<string, string>? localizedNames = null)
 {
-
-    private PackageEntry ventsEntry = package.Entries.Where( e => e.Key.Contains("vents_c"))
+    private PackageEntry ventsEntry = package.Entries.Where(e => e.Key.Contains("vents_c"))
         .First().Value.First();
-    private List<PackageEntry> vmdlEntries = package.Entries.Where( e => e.Key.Contains("vmdl_c"))
+    private List<PackageEntry> vmdlEntries = package.Entries.Where(e => e.Key.Contains("vmdl_c"))
         .First().Value;
 
-  
     public IEnumerable<Callout> Read()
     {
-        List<EntityLump.Entity> placeEnteties = GetPlaceEnteties();
+        List<EntityLump.Entity> placeEntities = GetPlaceEntities();
 
-        List<Callout> callcouts = placeEnteties
+        return placeEntities
             .Select(e => new
             {
-                Name = (string) e.GetProperty("place_name").Value,
-                Model = (string) e.GetProperty("model").Value,
+                Name = (string)e.GetProperty("place_name").Value,
+                Model = (string)e.GetProperty("model").Value,
                 Origin = EntityTransformHelper.ParseVector((string)e.GetProperty("origin").Value),
             })
-            .Select(e => new Callout
+            .Select(e =>
             {
-                Name = e.Name,
-                EnglishName = localizedNames.GetValueOrDefault(e.Name.ToLowerInvariant(), null),
-                Bounds = GetModelBounds(ReadModel(e.Model), e.Origin)
-                    .ToArray(),
-            })
-            .ToList();
-
-        return callcouts;
+                (Vector3 minBound, Vector3 maxBound) = GetModelBounds(ReadModel(e.Model), e.Origin);
+                return new Callout
+                {
+                    Name = e.Name,
+                    EnglishName = localizedNames?.GetValueOrDefault(e.Name.ToLowerInvariant(), ""),
+                    MinBound = minBound,
+                    MaxBound = maxBound,
+                };
+            });
     }
 
-    private List<Vector3> GetModelBounds(Resource modelResource, Vector3 origin)
+    private (Vector3 min, Vector3 max) GetModelBounds(Resource modelResource, Vector3 origin)
     {
         var physData = (PhysAggregateData)modelResource.GetBlockByType(BlockType.PHYS);
         if (physData == null)
@@ -50,27 +53,24 @@ public class ReadCallouts(Package package, Dictionary<string, string> localizedN
         }
         Shape shape = physData.Parts.First().Shape;
 
-        if(shape.Hulls == null)
+        if (shape.Hulls == null)
         {
             throw new Exception("Failed to read hulls.");
         }
 
         Hull? hull = shape.Hulls.FirstOrDefault()?.Shape;
-                
+
         if (hull == null)
         {
             throw new Exception("Failed to read hull.");
         }
 
         // Get the min and max bounds of the hull
-        Vector3 min = hull.Value.Min;
-        Vector3 max = hull.Value.Max;
-        min += origin;
-        max += origin;
+        Vector3 min = hull.Value.Min + origin;
+        Vector3 max = hull.Value.Max + origin;
 
-        return [min, max];
+        return (min, max);
     }
-
 
     private Resource ReadModel(string modelFile)
     {
@@ -84,8 +84,7 @@ public class ReadCallouts(Package package, Dictionary<string, string> localizedN
         return resource;
     }
 
-
-    private List<EntityLump.Entity> GetPlaceEnteties()
+    private List<EntityLump.Entity> GetPlaceEntities()
     {
         Resource resource = ReadEntry(ventsEntry);
         if (resource == null)
@@ -96,16 +95,15 @@ public class ReadCallouts(Package package, Dictionary<string, string> localizedN
         EntityLump entityLump = (EntityLump)resource.DataBlock;
         List<EntityLump.Entity> entities = entityLump.GetEntities().ToList();
 
-        //find env_cs_place
-        var placeEnteties = entities.Where(e => 
+        // Find env_cs_place
+        var placeEntities = entities.Where(e =>
             e.ContainsKey("classname")
             && e.GetProperty("classname").Value.ToString() == "env_cs_place")
             .ToList();
 
-        return placeEnteties;
+        return placeEntities;
     }
 
-    
     private Resource ReadEntry(PackageEntry modelEntry)
     {
         byte[] read;
