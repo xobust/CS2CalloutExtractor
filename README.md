@@ -85,9 +85,9 @@ foreach (var callout in callouts)
 
 ## Acknowledgements
 
-Thanks to @ValveResourceFormat for making a great library that was used to extract the correct data. 
+Thanks to [@ValveResourceFormat](https://github.com/ValveResourceFormat) for making a great library that was used to extract the correct data. 
 
-The solution was heavily inspired by @hjbdev [cs2-vmap-tools](https://github.com/hjbdev/cs2-vmap-tools), 
+The solution was heavily inspired by [@hjbdev's](https://github.com/hjbdev) [cs2-vmap-tools](https://github.com/hjbdev/cs2-vmap-tools), 
 but I liked the challenge to be able to do it without decompiling the full map.
 His blogpost [Counter-Strike 2: Where are the callouts stored?](https://hjb.dev/posts/counter-strike-2-where-are-all-the-callouts-2) was a great help.
 
