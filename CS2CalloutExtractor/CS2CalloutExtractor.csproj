@@ -9,7 +9,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>CS2CalloutExtractor</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Alexander Westberg-Bladh</Authors>
     <Company>Alexander Westberg-Bladh</Company>
     <Description>A library for extracting callouts from Counter-Strike 2 `.vpk` files.</Description>
