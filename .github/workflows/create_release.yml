@@ -4,20 +4,23 @@ on:
   push:
     tags:
       - 'v*' # Trigger on version tags like v1.0.0
+  
+permissions:
+  contents: write
 
 jobs:
   build-and-release:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]
         include:
           - os: ubuntu-latest
+            rid: linux-x64
             ext: ""
           - os: windows-latest
+            rid: win-x64
             ext: ".exe"
-          - os: macos-latest
-            ext: ""
 
     steps:
       - name: Checkout code
@@ -28,24 +31,14 @@ jobs:
         with:
           dotnet-version: '9.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
-
       - name: Build the CLI
-        run: dotnet publish ./CS2CalloutExtractor.Cli/CS2CalloutExtractor.Cli.csproj --configuration Release --runtime ${{ matrix.os }} --self-contained true --output ./artifacts/${{ matrix.os }}
-
-      - name: Verify artifact exists
-        run: |
-          if [ ! -d "./artifacts/${{ matrix.os }}" ]; then
-            echo "Error: Artifact directory does not exist."
-            exit 1
-          fi
+        run: dotnet publish ./CS2CalloutExtractor.Cli/CS2CalloutExtractor.Cli.csproj --configuration Release --runtime ${{ matrix.rid }} --self-contained true --output ./artifacts/${{ matrix.os }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: cli-${{ matrix.os }}
-          path: ./artifacts/${{ matrix.os }}
+          path: ./artifacts/${{ matrix.os }}/*${{ matrix.ext }}
 
   create-release:
     needs: build-and-release
@@ -53,10 +46,12 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: ./release
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./artifacts/**/*
+          files: ./release/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
