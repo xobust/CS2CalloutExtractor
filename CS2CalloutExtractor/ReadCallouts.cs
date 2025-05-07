@@ -33,7 +33,13 @@ public class ReadCallouts(Package package, Dictionary<string, string>? localized
             })
             .Select(e =>
             {
-                (Vector3 minBound, Vector3 maxBound) = GetModelBounds(ReadModel(e.Model), e.Origin);
+                Resource? modelResource = ReadModel(e.Model);
+                if (modelResource == null)
+                {
+                    Console.Error.WriteLine($"Failed to read model {e.Model} for callout {e.Name}");
+                    return null;
+                }
+                (Vector3 minBound, Vector3 maxBound) = GetModelBounds(modelResource, e.Origin);
                 return new Callout
                 {
                     Name = e.Name,
@@ -41,7 +47,7 @@ public class ReadCallouts(Package package, Dictionary<string, string>? localized
                     MinBound = minBound,
                     MaxBound = maxBound,
                 };
-            });
+            }).OfType<Callout>();
     }
 
     private (Vector3 min, Vector3 max) GetModelBounds(Resource modelResource, Vector3 origin)
@@ -72,13 +78,19 @@ public class ReadCallouts(Package package, Dictionary<string, string>? localized
         return (min, max);
     }
 
-    private Resource ReadModel(string modelFile)
+    private Resource? ReadModel(string modelFile)
     {
         modelFile = modelFile.Replace("vmdl", "vmdl_c");
+        modelFile = modelFile.Replace("\\", "/");
 
-        PackageEntry modelEntry = vmdlEntries
+        PackageEntry? modelEntry = vmdlEntries
             .Where(e => e.GetFullPath() == modelFile)
-            .First();
+            .FirstOrDefault();
+        if (modelEntry == null)
+        {
+            return null;
+        }
+
         Resource resource = ReadEntry(modelEntry);
 
         return resource;

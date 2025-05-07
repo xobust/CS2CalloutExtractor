@@ -33,7 +33,6 @@ rootCommand.SetHandler((pakFilePath, format, output) =>
 {
     using var package = new Package();
 
-    Console.WriteLine($"Reading {pakFilePath}");
     package.SetFileName(pakFilePath);
     package.Read(File.OpenRead(pakFilePath));
 
@@ -56,8 +55,7 @@ rootCommand.SetHandler((pakFilePath, format, output) =>
     }
     else
     {
-        Console.WriteLine($"Localization file {localizationCsv} not found. Exiting.");
-        return;
+        Console.Error.WriteLine($"Localization file {localizationCsv} not found, skipping localization");
     }
 
     // Read callouts
