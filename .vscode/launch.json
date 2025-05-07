@@ -5,10 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C#: zone-extract Debug",
+            "name": "C#: CS2CalloutExtractor.Cli debug de_dust2",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/CS2CalloutExtractor/CS2CalloutExtractor.csproj",
+            "projectPath": "${workspaceFolder}\\CS2CalloutExtractor.Cli\\CS2CalloutExtractor.Cli.csproj",
+            "args": ["C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive\\game\\csgo\\maps\\de_dust2.vpk"]
         }
     ]
 }
