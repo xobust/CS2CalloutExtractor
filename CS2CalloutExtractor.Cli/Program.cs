@@ -11,14 +11,14 @@ var pakFilePathOption = new Argument<string>(
     Arity = ArgumentArity.ExactlyOne
 };
 var formatOption = new Option<string>(
-    "--format",
+    ["--format", "-f"],
     () => "json",
     "Output format: 'json' or 'csv'")
 {
     IsRequired = false
 };
 var outputOption = new Option<string?>(
-    "--output",
+    ["--output", "-o"],
     "Path to the output file (optional). If not specified, output will be printed to the console.")
 {
     IsRequired = false
