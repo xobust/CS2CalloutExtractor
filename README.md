@@ -1,4 +1,4 @@
-# CounterStrike 2 Callout Extractor
+# CounterStrike 2 Callout Extractor ![NuGet Version](https://img.shields.io/nuget/v/CS2CalloutExtractor)
 
 Extracts callouts from `.vpk` maps using [ValveResourceFormat](https://github.com/ValveResourceFormat/ValveResourceFormat). The callouts are defined in [env_cs_place](https://developer.valvesoftware.com/wiki/Env_cs_place) entities. English localizations for the place names have been copied from the valve wiki. 
 
